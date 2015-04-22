@@ -2,9 +2,9 @@
 from utils import random_clamped
 import random
 
-CROSSOVER_RATE = 0.7
+CROSSOVER_RATE = 0.6
 MUTATION_RATE = 0.2
-MAX_PERTUBATION = 0.3
+MAX_PERTUBATION = 0.2
 
 class Chromosome(object):
     def __init__(self, weights):
@@ -23,8 +23,11 @@ class Algorithm(object):
     def __init__(self, n_chromosomes, n_weights):
         self.generation = 1
         self.size = n_chromosomes
-        weights = [random_clamped() for _ in range(n_weights)]
-        self.chromosomes = [Chromosome(weights) for _ in range(self.size)]
+
+        self.chromosomes = []
+        for _ in range(self.size):
+            weights = [random_clamped() for _ in range(n_weights)]
+            self.chromosomes.append(Chromosome(weights))
 
     def roulette(self):
         total_fitness = sum([c.fitness for c in self.chromosomes])

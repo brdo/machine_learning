@@ -1,4 +1,3 @@
-#!/usr/bin/python
 
 import math
 import random
@@ -26,43 +25,53 @@ class Tank(object):
         self.rotation = random.random() * 2 * math.pi
         self.bearing = Vector(math.cos(self.rotation), math.sin(self.rotation))
 
-        self.neural_net = NeuralNet(4,1,6,2)
+        self.neural_net = NeuralNet(4,1,6,3)
         self.fitness = 0
 
     def update(self, mines):
 
-        mine = sorted(mines, key = lambda m: m.position.distance(self.position))[0]
-        vec = Vector(mine.position.x, mine.position.y)
-        vec.normalize()
+        mines = sorted(mines, key = lambda m: m.position.distance(self.position))
 
-        outputs = self.neural_net.update([vec.x, vec.y,
+        # closest mine
+        closest_mine = mines[0]
+
+        # look_at vector
+        look_at = Vector(self.position.x - closest_mine.position.x,
+                         self.position.y - closest_mine.position.y)
+        look_at.normalize()
+
+        outputs = self.neural_net.update([look_at.x, look_at.y,
                                           self.bearing.x, self.bearing.y])
 
+        # rotation
+        self.rotation += (outputs[0] - outputs[1]) * 0.01
 
-        self.speed = outputs[0] + outputs[1]
-        self.rotation += clamp(outputs[0] - outputs[1], -0.3, 0.3)
+        # speed
+        self.speed = outputs[2]
 
-        self.bearing.x = -math.sin(self.rotation)
-        self.bearing.y = math.cos(self.rotation)
-        self.bearing.normalize()
+        # calcuate new bearing
+        degrees = self.rotation * 180 / math.pi
+        self.bearing.x = -math.sin(degrees)
+        self.bearing.y = math.cos(degrees)
 
+        # calculate new position
         self.position.x += self.bearing.x * self.speed
         self.position.y += self.bearing.y * self.speed
 
-        if self.position.x > WIDTH: self.position.x = 0
-        if self.position.x < 0: self.position.x = WIDTH
-        if self.position.y > HEIGHT: self.position.y = 0
-        if self.position.y < 0: self.position.y = HEIGHT
+        self.position.x = clamp(self.position.x, 0, WIDTH)
+        self.position.y = clamp(self.position.y, 0, HEIGHT)
 
-        return mine
+        return closest_mine
 
     def __repr__(self):
-        return 'Tank(position=[%s], bearing=[%s], fitness=%s)' % (self.position, self.bearing, self.fitness)
+        return 'Tank(position=[%s], bearing=[%s], fitness=%s)'\
+                % (self.position, self.bearing, self.fitness)
 
 def generate_mines(number):
     mines = []
     for _ in range(number):
-        position = Vector(random.random()*WIDTH, random.random()*HEIGHT)
+        position = Vector(random.random() * WIDTH,
+                          random.random() * HEIGHT)
         mine = Mine(position)
         mines.append(mine)
 
@@ -71,7 +80,8 @@ def generate_mines(number):
 def generate_tanks(number):
     tanks = []
     for _ in range(number):
-        position = Vector(random.random()*WIDTH, random.random()*HEIGHT)
+        position = Vector(random.random() * WIDTH,
+                          random.random() * HEIGHT)
         tank = Tank(position)
         tanks.append(tank)
 
