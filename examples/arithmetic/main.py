@@ -235,7 +235,7 @@ def main():
 
     from optparse import OptionParser
 
-    parser = OptionParser('equest.py <value> [options]')
+    parser = OptionParser('main.py <value> [options]')
 
     parser.add_option("--chromo-length", type='int',
                       dest="chromo_length", default=CHROMO_LEN,

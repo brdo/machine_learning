@@ -5,11 +5,18 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 def init_plot(width, height):
+    """
+    initialize the plot
+    """
     plt.axis([0, width, 0, height])
     plt.ion()
+    plt.axes().set_aspect('equal')
     plt.show()
 
 def redraw_plot(mines, tanks, delay=0.05):
+    """
+    redraw the plot
+    """
 
     cmap = plt.get_cmap('hsv')
     points = []
@@ -22,7 +29,6 @@ def redraw_plot(mines, tanks, delay=0.05):
     max_fitness = max([t.fitness for t in tanks])
 
     for t, tank in enumerate(tanks):
-        tank.update(mines)
         rotation = 180 / ( math.pi ) * math.atan(tank.bearing.y/tank.bearing.x)
         pnt = plt.scatter(tank.position.x, tank.position.y,
                           cmap = cmap,

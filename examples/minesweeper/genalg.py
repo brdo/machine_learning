@@ -2,34 +2,50 @@
 from utils import random_clamped
 import random
 
-CROSSOVER_RATE = 0.6
-MUTATION_RATE = 0.05
-MAX_PERTUBATION = 0.1
-
 class Chromosome(object):
-    def __init__(self, weights):
-        self.fitness = 0
+    """
+    Chromosome class
+    """
+    def __init__(self, weights, mutation_rate):
         self.weights = weights
+        self.mutation_rate = mutation_rate
 
-    def mutate(self):
+        self.fitness = 0
+
+    def mutate(self, max_pertubation = 0.05):
+        """
+        mutate chromosome
+        """
         for w in range(len(self.weights)):
-            if random.random() < MUTATION_RATE:
-                self.weights[w] += random_clamped() * MAX_PERTUBATION
+            if random.random() < self.mutation_rate:
+                self.weights[w] += random_clamped() * max_pertubation
 
     def __repr__(self):
         return 'Chromo(fitness=%5.2f)' %( self.fitness )
 
 class Algorithm(object):
-    def __init__(self, n_chromosomes, n_weights):
+    """
+    Genetic Algorithm class
+    """
+    def __init__(self, chromo_length, pop_size,
+                 crossover_rate, mutation_rate):
+
+        self.chromo_length = chromo_length
+        self.pop_size = pop_size
+        self.crossover_rate = crossover_rate
+        self.mutation_rate = mutation_rate
         self.generation = 1
-        self.size = n_chromosomes
+        self.size = pop_size
 
         self.chromosomes = []
         for _ in range(self.size):
-            weights = [random_clamped() for _ in range(n_weights)]
-            self.chromosomes.append(Chromosome(weights))
+            weights = [random_clamped() for _ in range(chromo_length)]
+            self.chromosomes.append(Chromosome(weights, mutation_rate))
 
     def roulette(self):
+        """
+        choose a chromosome at random but favor ones with higher fitness
+        """
         total_fitness = sum([c.fitness for c in self.chromosomes])
         rand_value = random.random() * total_fitness
 
@@ -40,18 +56,23 @@ class Algorithm(object):
                 return c
 
     def crossover(self, papa, mama):
-        if random.random() > CROSSOVER_RATE:
+        """
+        breed two chromosomes, return two new chromosomes
+        """
+        if random.random() > self.crossover_rate:
             # no baby
             return papa, mama
 
         x = random.randint(0,len(papa.weights)-1)
 
-        baby1 = Chromosome(papa.weights[0:x] + mama.weights[x:])
-        baby2 = Chromosome(mama.weights[0:x] + papa.weights[x:])
+        baby1 = Chromosome(papa.weights[0:x] + mama.weights[x:], self.mutation_rate)
+        baby2 = Chromosome(mama.weights[0:x] + papa.weights[x:], self.mutation_rate)
         return baby1, baby2
 
     def epoch(self):
-
+        """
+        run a single generation
+        """
         chromosomes = sorted( self.chromosomes, key = lambda c: c.fitness, reverse = True )
 
         # breed
@@ -61,8 +82,11 @@ class Algorithm(object):
             mama = self.roulette()
             if papa and mama:
                 baby1, baby2 = self.crossover(papa, mama)
-                baby1.mutate()
-                baby2.mutate()
+
+                # mutate based on a cooling factor
+                baby1.mutate(1.0/self.generation)
+                baby2.mutate(1.0/self.generation)
+
                 new_chromosomes.append(baby1)
                 new_chromosomes.append(baby2)
 
