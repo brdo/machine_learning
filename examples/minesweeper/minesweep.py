@@ -25,7 +25,7 @@ class Tank(object):
         self.rotation = random.random() * 2 * math.pi
         self.bearing = Vector(math.cos(self.rotation), math.sin(self.rotation))
 
-        self.neural_net = NeuralNet(4,1,6,3)
+        self.neural_net = NeuralNet(4,1,10,3)
         self.fitness = 0
 
     def update(self, mines):
@@ -58,8 +58,11 @@ class Tank(object):
         self.position.x += self.bearing.x * self.speed
         self.position.y += self.bearing.y * self.speed
 
-        self.position.x = clamp(self.position.x, 0, WIDTH)
-        self.position.y = clamp(self.position.y, 0, HEIGHT)
+        if self.position.x > WIDTH: self.position.x = 0
+        if self.position.x < 0: self.position.x = WIDTH
+
+        if self.position.y > HEIGHT: self.position.y = 0
+        if self.position.y < 0: self.position.y = HEIGHT
 
         return closest_mine
 

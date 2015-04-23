@@ -7,7 +7,7 @@ from genalg import Algorithm
 from plot import init_plot, redraw_plot
 
 mines = generate_mines(50)
-tanks = generate_tanks(20)
+tanks = generate_tanks(40)
 
 alg = Algorithm(len(tanks),
                 len(tanks[0].neural_net.get_weights()))
@@ -29,7 +29,7 @@ while True:
             vec = Vector(closest_mine.position.x, closest_mine.position.y)
             distance = vec.distance(tank.position)
             if 2 > distance:
-                tank.fitness += 1
+                tank.fitness += 10
                 closest_mine.relocate()
             alg.chromosomes[i].fitness = tank.fitness
         redraw_plot(mines, tanks)

@@ -3,8 +3,8 @@ from utils import random_clamped
 import random
 
 CROSSOVER_RATE = 0.6
-MUTATION_RATE = 0.2
-MAX_PERTUBATION = 0.2
+MUTATION_RATE = 0.05
+MAX_PERTUBATION = 0.1
 
 class Chromosome(object):
     def __init__(self, weights):
