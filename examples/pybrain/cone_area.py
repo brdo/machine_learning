@@ -2,6 +2,8 @@
 
 """
 Cone surface area optimization using NSGA-II multi-objective optimization algorithm
+Problem: http://www.math.unipd.it/~marcuzzi/DIDATTICA/LEZ&ESE_PIAI_Matematica/3_cones.pdf
+Issues:  https://github.com/pybrain/pybrain/issues/167
 """
 
 from pybrain.optimization import ConstMultiObjectiveGA
