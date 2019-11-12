@@ -48,6 +48,7 @@ def redraw_plot(obstacles, disks, delay=0.05):
             circles.append(circle)
 
     plt.draw()
+    plt.pause(0.001)
 
     for circle in circles:
         circle.remove()

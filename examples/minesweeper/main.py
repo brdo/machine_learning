@@ -8,9 +8,9 @@ from plot import init_plot, redraw_plot
 
 CROSSOVER_RATE = 0.7
 MUTATION_RATE = 0.1
-POP_SIZE = 40
+POP_SIZE = 50
 MAX_GENERATIONS = 200
-NUM_MINES = 50
+NUM_MINES = 5
 
 def main():
     """
@@ -61,13 +61,16 @@ def main():
                 tanks[c].fitness = 0
                 print c, tanks[c]
 
-        if t < 150:
+        if t < 300:
             for i, tank in enumerate(tanks):
                 closest_mine = tank.update(mines)
                 vec = Vector(closest_mine.position.x, closest_mine.position.y)
                 distance = vec.distance(tank.position)
                 if 2 > distance:
-                    tank.fitness += 10
+                    if tank.fitness == 0:
+                        tank.fitness = 1
+                    else:
+                        tank.fitness *= 2
                     closest_mine.relocate()
                 alg.chromosomes[i].fitness = tank.fitness
             redraw_plot(mines, tanks)

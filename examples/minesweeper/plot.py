@@ -39,8 +39,7 @@ def redraw_plot(mines, tanks, delay=0.05):
         points.append(pnt)
 
     plt.draw()
-
-    time.sleep(delay)
+    plt.pause(0.001)
 
     for pnt in points:
         pnt.remove()
